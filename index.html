@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LinguaAI — AI-Powered Language Translator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+    <!-- ==================== NAVBAR ==================== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">⌘</span>
+                LinguaAI
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="translator.html">Translator</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span class="theme-icon">◐</span>
+                </button>
+                <a href="translator.html" class="btn-primary">Start Translating</a>
+            </div>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+            <div class="grid-lines"></div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                AI-Powered Translation Engine
+            </div>
+            <h1 class="hero-title">
+                Break Every
+                <em>Language</em>
+                Barrier.
+            </h1>
+            <p class="hero-subtitle">
+                Translate across 50+ languages instantly with AI precision.
+                Auto-detect, voice playback, and full translation history — all in one place.
+            </p>
+            <div class="hero-actions">
+                <a href="translator.html" class="btn-hero-primary">
+                    Start Translating Free
+                    <span class="btn-arrow">→</span>
+                </a>
+                <a href="about.html" class="btn-hero-secondary">Learn More</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Languages</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">∞</span>
+                    <span class="stat-label">Translations</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Free</span>
+                </div>
+            </div>
+        </div>
+        <!-- Floating preview card -->
+        <div class="hero-preview">
+            <div class="preview-card">
+                <div class="preview-header">
+                    <div class="preview-lang">English → Hindi</div>
+                    <div class="preview-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-source">"Hello, how are you today?"</div>
+                    <div class="preview-arrow">↓</div>
+                    <div class="preview-target">"नमस्ते, आप आज कैसे हैं?"</div>
+                </div>
+                <div class="preview-footer">
+                    <span class="preview-badge">Auto-detected</span>
+                    <span class="preview-time">0.3s</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FEATURES ==================== -->
+    <section class="features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Why LinguaAI</span>
+                <h2 class="section-title">Everything you need to<br/>communicate globally</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card feature-card--large">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Translation</h3>
+                    <p>Lightning-fast translations powered by a robust open-source API. No delays, no waiting — just instant results.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>50+ Languages</h3>
+                    <p>From major world languages to regional dialects, we've got you covered.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Auto-Detect</h3>
+                    <p>Paste any text and let our AI figure out the source language automatically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔊</div>
+                    <h3>Text-to-Speech</h3>
+                    <p>Hear your translation spoken aloud with native-quality pronunciation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Copy & Share</h3>
+                    <p>One click to copy any translation to your clipboard. Share instantly.</p>
+                </div>
+                <div class="feature-card feature-card--large">
+                    <div class="feature-icon">📜</div>
+                    <h3>Translation History</h3>
+                    <p>Every translation you make is saved locally in your browser. Browse, revisit, and reuse past translations with a single click. Your translation memory, always at your fingertips.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== LANGUAGES STRIP ==================== -->
+    <section class="lang-strip">
+        <div class="strip-track">
+            <span>English</span><span>Spanish</span><span>French</span><span>German</span>
+            <span>Japanese</span><span>Chinese</span><span>Arabic</span><span>Hindi</span>
+            <span>Portuguese</span><span>Russian</span><span>Korean</span><span>Italian</span>
+            <span>Dutch</span><span>Turkish</span><span>Polish</span><span>Swedish</span>
+            <span>English</span><span>Spanish</span><span>French</span><span>German</span>
+            <span>Japanese</span><span>Chinese</span><span>Arabic</span><span>Hindi</span>
+            <span>Portuguese</span><span>Russian</span><span>Korean</span><span>Italian</span>
+        </div>
+    </section>
+
+    <!-- ==================== HOW IT WORKS ==================== -->
+    <section class="how-it-works">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">How It Works</span>
+                <h2 class="section-title">Translate in three simple steps</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <h3>Enter Your Text</h3>
+                    <p>Type or paste the text you want to translate. Up to 5,000 characters at a time.</p>
+                </div>
+                <div class="step-connector">→</div>
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <h3>Choose Languages</h3>
+                    <p>Select your target language or let auto-detect identify the source for you.</p>
+                </div>
+                <div class="step-connector">→</div>
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <h3>Get Translation</h3>
+                    <p>Hit translate and get your result instantly. Copy or listen to it with one click.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CTA ==================== -->
+    <section class="cta-section">
+        <div class="section-container">
+            <div class="cta-card">
+                <div class="cta-orb"></div>
+                <h2>Ready to break language barriers?</h2>
+                <p>Join thousands of users who translate smarter with LinguaAI.</p>
+                <a href="translator.html" class="btn-hero-primary">
+                    Open Translator
+                    <span class="btn-arrow">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-icon">⌘</span>LinguaAI
+                </a>
+                <p>AI-powered translation for a connected world.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Pages</h4>
+                    <a href="index.html">Home</a>
+                    <a href="translator.html">Translator</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Features</h4>
+                    <a href="translator.html">Auto-Detect</a>
+                    <a href="translator.html">Text-to-Speech</a>
+                    <a href="translator.html">History</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 LinguaAI. Built with LibreTranslate & Web Speech API.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
