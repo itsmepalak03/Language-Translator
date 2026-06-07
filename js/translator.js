@@ -1,6 +1,6 @@
 'use strict';
 
-/* 1. LANGUAGE DATA */
+/* LANGUAGE DATA */
 var LANGUAGES = [
     { code: 'auto', name: 'Auto-Detect',   flag: '🌐' },
     { code: 'af',   name: 'Afrikaans',     flag: '🇿🇦' },
@@ -64,7 +64,6 @@ var LANGUAGES = [
     { code: 'cy',   name: 'Welsh',         flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' }
 ];
 
-/** Quick-access language pills shown below the translator */
 var QUICK_LANGS = [
     { code: 'es', name: 'Spanish',    flag: '🇪🇸' },
     { code: 'fr', name: 'French',     flag: '🇫🇷' },
@@ -80,24 +79,14 @@ var QUICK_LANGS = [
     { code: 'tr', name: 'Turkish',    flag: '🇹🇷' }
 ];
 
-/* ============================================================
-   2. API FUNCTIONS
-   Both are 100% free, no API key, work from browsers.
-   ============================================================ */
+/* API FUNCTIONS */
 
-/**
- * PRIMARY: MyMemory Translation API
- * Docs: https://mymemory.translated.net/doc/spec.php
- * Limit: 500 words/day (anonymous), 10k with email param
- * Returns: { translation, detectedLang }
- */
 function translateWithMyMemory(text, srcLang, tgtLang) {
-    /* MyMemory uses "en|es" format. "auto" → "autodetect" */
     var pair = (srcLang === 'auto' ? 'autodetect' : srcLang) + '|' + tgtLang;
     var url  = 'https://api.mymemory.translated.net/get'
              + '?q='        + encodeURIComponent(text)
              + '&langpair=' + encodeURIComponent(pair)
-             + '&de=user@linguaai.app'; /* email gives 10k/day instead of 500 */
+             + '&de=user@linguaai.app'; 
 
     return fetch(url)
         .then(function (res) {
@@ -107,7 +96,6 @@ function translateWithMyMemory(text, srcLang, tgtLang) {
             return res.json();
         })
         .then(function (data) {
-            /* responseStatus 200 = OK, 206 = partial match */
             if (data.responseStatus !== 200 && data.responseStatus !== 206) {
                 throw new Error(data.responseMessage || 'MyMemory error ' + data.responseStatus);
             }
@@ -117,12 +105,10 @@ function translateWithMyMemory(text, srcLang, tgtLang) {
                 throw new Error('MyMemory returned empty translation');
             }
 
-            /* MyMemory returns "MYMEMORY WARNING" string when limit is hit */
             if (translated.toUpperCase().indexOf('MYMEMORY WARNING') === 0) {
                 throw new Error('MyMemory daily limit reached — switching to backup API');
             }
 
-            /* Detect language returned in matches[0].source */
             var detectedLang = null;
             if (srcLang === 'auto' && data.matches && data.matches.length > 0) {
                 var raw = data.matches[0].source;
@@ -139,12 +125,6 @@ function translateWithMyMemory(text, srcLang, tgtLang) {
         });
 }
 
-/**
- * FALLBACK: Google Translate (unofficial client=gtx endpoint)
- * This is the same endpoint used by many open-source tools.
- * No API key required. Works reliably from browsers.
- * Returns: { translation, detectedLang }
- */
 function translateWithGoogle(text, srcLang, tgtLang) {
     var sl  = srcLang === 'auto' ? 'auto' : srcLang;
     var url = 'https://translate.googleapis.com/translate_a/single'
@@ -152,7 +132,7 @@ function translateWithGoogle(text, srcLang, tgtLang) {
             + '&sl='  + encodeURIComponent(sl)
             + '&tl='  + encodeURIComponent(tgtLang)
             + '&dt=t'
-            + '&dt=ld'   /* language detection info */
+            + '&dt=ld'   
             + '&q='   + encodeURIComponent(text);
 
     return fetch(url)
@@ -163,16 +143,11 @@ function translateWithGoogle(text, srcLang, tgtLang) {
             return res.json();
         })
         .then(function (data) {
-            /*
-             * Google response structure (array):
-             * data[0] = array of translated segments: [[translated, source, ...], ...]
-             * data[2] = detected source language string
-             */
+          
             if (!Array.isArray(data) || !Array.isArray(data[0])) {
                 throw new Error('Unexpected response from Google Translate');
             }
 
-            /* Concatenate all translated segments */
             var translated = data[0]
                 .filter(function (seg) { return seg && seg[0]; })
                 .map(function   (seg) { return seg[0]; })
@@ -195,10 +170,7 @@ function translateWithGoogle(text, srcLang, tgtLang) {
         });
 }
 
-/**
- * Main translate function — tries MyMemory first, falls back to Google.
- * Returns a Promise resolving to { translation, detectedLang, source }
- */
+
 function translate(text, srcLang, tgtLang) {
     return translateWithMyMemory(text, srcLang, tgtLang)
         .then(function (result) {
@@ -223,9 +195,7 @@ function translate(text, srcLang, tgtLang) {
         });
 }
 
-/* ============================================================
-   3. APP STATE
-   ============================================================ */
+/* APP STATE */
 var appState = {
     currentTranslation: '',   /* Last successful translated text */
     ttsActive:          false, /* Is TTS currently speaking? */
@@ -233,17 +203,12 @@ var appState = {
     history:            []     /* Array of past translation objects */
 };
 
-/* ============================================================
-   4. DOM ELEMENT CACHE
-   ============================================================ */
+/* DOM ELEMENT CACHE */
 var el = {};
 
-/* ============================================================
-   5. INITIALISATION — runs after DOM is ready
-   ============================================================ */
+/* 5. INITIALISATION — runs after DOM is read */
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* --- Cache all DOM elements --- */
     el.srcLang          = document.getElementById('srcLang');
     el.tgtLang          = document.getElementById('tgtLang');
     el.srcText          = document.getElementById('srcText');
@@ -293,9 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
     bindAllEvents();
 });
 
-/* ============================================================
-   6. THEME
-   ============================================================ */
+/* THEME */
 function initTheme() {
     var saved = localStorage.getItem('lingua-theme') || 'light';
     applyTheme(saved);
@@ -305,18 +268,14 @@ function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('lingua-theme', theme);
 
-    /* Toggle sun/moon icons */
     if (el.iconSun && el.iconMoon) {
         el.iconSun.style.display  = theme === 'dark' ? 'none'  : 'block';
         el.iconMoon.style.display = theme === 'dark' ? 'block' : 'none';
     }
 }
 
-/* ============================================================
-   7. NAVBAR
-   ============================================================ */
+/*  NAVBAR */
 function initNavbar() {
-    /* Scroll shadow */
     window.addEventListener('scroll', function () {
         if (el.navbar) {
             el.navbar.classList.toggle('scrolled', window.scrollY > 8);
@@ -324,11 +283,7 @@ function initNavbar() {
     }, { passive: true });
 }
 
-/* ============================================================
-   8. POPULATE <select> ELEMENTS
-   ============================================================ */
 function populateLanguageSelects() {
-    /* Source select: includes Auto-Detect */
     el.srcLang.innerHTML = '';
     LANGUAGES.forEach(function (lang) {
         var opt       = document.createElement('option');
@@ -339,7 +294,6 @@ function populateLanguageSelects() {
         el.srcLang.appendChild(opt);
     });
 
-    /* Target select: excludes Auto-Detect */
     el.tgtLang.innerHTML = '';
     LANGUAGES.filter(function (l) { return l.code !== 'auto'; })
              .forEach(function (lang) {
@@ -349,7 +303,6 @@ function populateLanguageSelects() {
         el.tgtLang.appendChild(opt);
     });
 
-    /* Restore last-used preferences */
     var savedSrc = localStorage.getItem('lingua-src') || 'auto';
     var savedTgt = localStorage.getItem('lingua-tgt') || 'es';
 
@@ -359,9 +312,6 @@ function populateLanguageSelects() {
     updateLangLabels();
 }
 
-/* ============================================================
-   9. QUICK LANGUAGE PILLS
-   ============================================================ */
 function buildQuickPills() {
     el.quickPills.innerHTML = '';
 
@@ -382,7 +332,6 @@ function buildQuickPills() {
             updateLangLabels();
             refreshQuickPillActive();
 
-            /* If there is source text, immediately translate */
             if (el.srcText.value.trim()) {
                 runTranslation();
             }
@@ -399,46 +348,33 @@ function refreshQuickPillActive() {
     });
 }
 
-/* ============================================================
-   10. EVENT BINDING
-   ============================================================ */
 function bindAllEvents() {
 
-    /* ---- Theme button ---- */
     el.themeBtn.addEventListener('click', function () {
         var current = document.documentElement.getAttribute('data-theme');
         applyTheme(current === 'dark' ? 'light' : 'dark');
     });
 
-    /* ---- Hamburger ---- */
     el.hamburger.addEventListener('click', function () {
         var open = el.navLinks.classList.toggle('is-open');
         el.hamburger.classList.toggle('is-open', open);
         el.hamburger.setAttribute('aria-expanded', open);
     });
 
-    /* Close mobile nav on link click */
     el.navLinks.querySelectorAll('a').forEach(function (a) {
         a.addEventListener('click', function () {
             el.navLinks.classList.remove('is-open');
             el.hamburger.classList.remove('is-open');
         });
     });
-
-    /* ---- Source textarea ---- */
     el.srcText.addEventListener('input', function () {
-        /* Update character counter */
         var len = el.srcText.value.length;
         el.charCount.textContent = len + ' / 5000';
-
-        /* Clear output when source is emptied */
         if (!el.srcText.value.trim()) {
             clearOutput();
             hideDetectedBadge();
         }
     });
-
-    /* Ctrl/Cmd + Enter → translate */
     el.srcText.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             e.preventDefault();
@@ -446,14 +382,11 @@ function bindAllEvents() {
         }
     });
 
-    /* ---- Translate buttons ---- */
     el.translateBtn.addEventListener('click', runTranslation);
     el.btnTranslateMobile.addEventListener('click', runTranslation);
 
-    /* ---- Swap languages ---- */
     el.swapBtn.addEventListener('click', swapLanguages);
 
-    /* ---- Clear source ---- */
     el.srcClearBtn.addEventListener('click', function () {
         el.srcText.value = '';
         el.charCount.textContent = '0 / 5000';
@@ -463,7 +396,6 @@ function bindAllEvents() {
         el.srcText.focus();
     });
 
-    /* ---- Copy source text ---- */
     el.srcCopyBtn.addEventListener('click', function () {
         var text = el.srcText.value.trim();
         if (!text) {
@@ -473,7 +405,6 @@ function bindAllEvents() {
         copyText(text, 'Source text copied!');
     });
 
-    /* ---- Speak source text ---- */
     el.srcSpeakBtn.addEventListener('click', function () {
         var text = el.srcText.value.trim();
         if (!text) {
@@ -484,7 +415,6 @@ function bindAllEvents() {
         speakText(text, lang);
     });
 
-    /* ---- Copy translation ---- */
     el.tgtCopyBtn.addEventListener('click', function () {
         if (!appState.currentTranslation) {
             showToast('Nothing to copy yet.', 'error');
@@ -493,13 +423,10 @@ function bindAllEvents() {
         copyText(appState.currentTranslation, 'Translation copied!');
     });
 
-    /* ---- TTS for translation ---- */
     el.ttsBtn.addEventListener('click', toggleTTS);
 
-    /* ---- Share translation ---- */
     el.shareBtn.addEventListener('click', shareTranslation);
 
-    /* ---- Language selects ---- */
     el.srcLang.addEventListener('change', function () {
         localStorage.setItem('lingua-src', el.srcLang.value);
         updateLangLabels();
@@ -512,10 +439,8 @@ function bindAllEvents() {
         refreshQuickPillActive();
     });
 
-    /* ---- Banner close ---- */
     el.statusBannerClose.addEventListener('click', hideBanner);
 
-    /* ---- Clear history ---- */
     el.btnClearHistory.addEventListener('click', function () {
         appState.history = [];
         saveHistoryToStorage();
@@ -524,15 +449,12 @@ function bindAllEvents() {
     });
 }
 
-/* ============================================================
-   11. MAIN TRANSLATE FLOW
-   ============================================================ */
+/* MAIN TRANSLATE FLOW */
 function runTranslation() {
     var text   = el.srcText.value.trim();
     var srcLang = el.srcLang.value;
     var tgtLang = el.tgtLang.value;
 
-    /* Validation */
     if (!text) {
         showBanner('Please type or paste some text to translate.', 'error');
         el.srcText.focus();
@@ -543,8 +465,6 @@ function runTranslation() {
         showBanner('Source and target languages are the same — please choose different ones.', 'error');
         return;
     }
-
-    /* Start loading state */
     setLoadingState(true);
     hideBanner();
     hideDetectedBadge();
@@ -556,13 +476,10 @@ function runTranslation() {
         .then(function (result) {
             var elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
 
-            /* Display translation */
             setOutputText(result.translation);
 
-            /* Show speed */
             el.transSpeed.textContent = elapsed + 's via ' + result.apiSource;
 
-            /* Show detected language badge */
             if (result.detectedLang) {
                 var detectedLangObj = LANGUAGES.find(function (l) {
                     return l.code === result.detectedLang;
@@ -572,7 +489,6 @@ function runTranslation() {
                 }
             }
 
-            /* Save to history */
             var effectiveSrc = result.detectedLang || (srcLang === 'auto' ? 'en' : srcLang);
             pushToHistory(
                 text,
@@ -595,9 +511,7 @@ function runTranslation() {
         });
 }
 
-/* ============================================================
-   12. SWAP LANGUAGES
-   ============================================================ */
+
 function swapLanguages() {
     var curSrc = el.srcLang.value;
     var curTgt = el.tgtLang.value;
@@ -607,18 +521,14 @@ function swapLanguages() {
         return;
     }
 
-    /* Determine new values */
-    var newSrc = curTgt;                           /* old target becomes source */
-    var newTgt = curSrc === 'auto' ? 'en' : curSrc; /* old source becomes target */
-
-    /* Set selects (guard against missing options) */
+    var newSrc = curTgt;                           
+    var newTgt = curSrc === 'auto' ? 'en' : curSrc;
+    
     var srcHas = Array.from(el.srcLang.options).some(function (o) { return o.value === newSrc; });
     var tgtHas = Array.from(el.tgtLang.options).some(function (o) { return o.value === newTgt; });
 
     if (srcHas) el.srcLang.value = newSrc;
     if (tgtHas) el.tgtLang.value = newTgt;
-
-    /* Swap text box contents */
     var oldSource = el.srcText.value.trim();
     var oldTarget = appState.currentTranslation;
 
@@ -639,9 +549,7 @@ function swapLanguages() {
     showToast('Languages swapped!', 'info');
 }
 
-/* ============================================================
-   13. TEXT-TO-SPEECH
-   ============================================================ */
+/* TEXT-TO-SPEECH */
 function toggleTTS() {
     if (!appState.currentTranslation) {
         showToast('Nothing to speak yet — translate first.', 'info');
@@ -654,7 +562,6 @@ function toggleTTS() {
     }
 
     if (appState.ttsActive) {
-        /* Stop playback */
         speechSynthesis.cancel();
         appState.ttsActive = false;
         updateTTSButton(false);
@@ -666,7 +573,7 @@ function toggleTTS() {
 
 function speakText(text, langCode) {
     if (!window.speechSynthesis) return;
-    speechSynthesis.cancel(); /* stop any ongoing speech */
+    speechSynthesis.cancel(); 
 
     var utt  = new SpeechSynthesisUtterance(text);
     utt.lang = langCode || 'en';
@@ -684,7 +591,6 @@ function speakText(text, langCode) {
     utt.onerror = function (e) {
         appState.ttsActive = false;
         updateTTSButton(false);
-        /* Ignore 'interrupted' error — happens when user clicks stop */
         if (e.error !== 'interrupted') {
             showToast('Speech failed for this language.', 'error');
         }
@@ -706,9 +612,7 @@ function updateTTSButton(playing) {
     el.ttsBtn.title = playing ? 'Stop speaking' : 'Listen to translation';
 }
 
-/* ============================================================
-   14. COPY TO CLIPBOARD
-   ============================================================ */
+/* COPY TO CLIPBOARD*/
 function copyText(text, successMsg) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text)
@@ -735,9 +639,7 @@ function legacyCopy(text, successMsg) {
     document.body.removeChild(ta);
 }
 
-/* ============================================================
-   15. SHARE
-   ============================================================ */
+/* SHARE */
 function shareTranslation() {
     if (!appState.currentTranslation) {
         showToast('Nothing to share yet.', 'info');
@@ -761,16 +663,13 @@ function shareTranslation() {
     }
 }
 
-/* ============================================================
-   16. TRANSLATION HISTORY
-   ============================================================ */
+/* TRANSLATION HISTORY */
 function pushToHistory(srcText, tgtText, srcCode, tgtCode, srcName, tgtName) {
     /* Remove duplicate of same src+tgt pair */
     appState.history = appState.history.filter(function (h) {
         return !(h.srcText === srcText && h.tgtCode === tgtCode);
     });
 
-    /* Prepend newest */
     appState.history.unshift({
         id:      Date.now(),
         srcText: srcText,
@@ -795,7 +694,6 @@ function saveHistoryToStorage() {
     try {
         localStorage.setItem('lingua-history', JSON.stringify(appState.history));
     } catch (e) {
-        /* Storage full — keep only 5 latest and retry */
         appState.history = appState.history.slice(0, 5);
         try {
             localStorage.setItem('lingua-history', JSON.stringify(appState.history));
@@ -886,11 +784,8 @@ function renderHistory() {
     });
 }
 
-/* ============================================================
-   17. UI STATE HELPERS
-   ============================================================ */
+/* UI STATE HELPERS */
 
-/** Show translated text in the output panel */
 function setOutputText(text) {
     appState.currentTranslation = text;
 
@@ -963,14 +858,10 @@ function showBanner(message, type) {
     el.statusBannerText.textContent = message;
 }
 
-/** Hide the status banner */
 function hideBanner() {
     el.statusBanner.style.display = 'none';
 }
 
-/* ============================================================
-   18. TOAST NOTIFICATIONS
-   ============================================================ */
 var TOAST_ICONS = { success: '✓', error: '✕', info: 'ℹ' };
 
 function showToast(message, type) {
@@ -987,7 +878,6 @@ function showToast(message, type) {
 
     stack.appendChild(toast);
 
-    /* Auto-dismiss after 3 seconds */
     setTimeout(function () {
         toast.classList.add('is-hiding');
         toast.addEventListener('animationend', function () {
@@ -996,18 +886,12 @@ function showToast(message, type) {
     }, 3000);
 }
 
-/* ============================================================
-   19. UTILITY FUNCTIONS
-   ============================================================ */
-
-/** Get human-readable language name from code */
 function getLangName(code) {
     if (!code || code === 'auto') return 'Auto-Detect';
     var match = LANGUAGES.find(function (l) { return l.code === code; });
     return match ? match.name : code;
 }
 
-/** Escape HTML special characters to prevent XSS */
 function htmlEsc(str) {
     return String(str)
         .replace(/&/g,  '&amp;')
